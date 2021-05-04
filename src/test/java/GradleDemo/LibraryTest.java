@@ -3,12 +3,52 @@
  */
 package GradleDemo;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.test.JobLauncherTestUtils;
+import org.springframework.batch.test.JobRepositoryTestUtils;
+import org.springframework.batch.test.context.SpringBatchTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
 
+import com.demo.batchprocessing.BatchConfigJson;
+
+@SpringBatchTest
+@ContextConfiguration(classes = BatchConfigJson.class)
 public class LibraryTest {
-    @Test public void testSomeLibraryMethod() {
-        Library classUnderTest = new Library();
-        assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
-    }
+
+	@Autowired
+	private JobLauncherTestUtils jobLaucherTestUtils;
+
+	@Autowired
+	private JobRepositoryTestUtils jobRepositoryTestUtils;
+
+	@BeforeEach
+	public void clearJobExecutions() {
+		this.jobRepositoryTestUtils.removeJobExecutions();
+	}
+	
+	@Test
+	public void testMyJob() throws Exception {
+		// given
+		JobParameters jobParameters = this.jobLaucherTestUtils.getUniqueJobParameters();
+//		FileSystemResource files = new FileSystemResource("data.csv");
+
+		//when
+		JobExecution jobExecution = this.jobLaucherTestUtils.launchJob(jobParameters);
+
+		// then
+//		Assertions.assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
+//
+//		JobExecution jobExecution = this.jobLaucherTestUtils.launchJob();
+		Assertions.assertEquals(ExitStatus.COMPLETED, jobExecution.getStatus());
+	}
+
 }
